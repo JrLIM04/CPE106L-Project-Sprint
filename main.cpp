@@ -12,8 +12,6 @@ bool run;
     
 /*
  * FEATURES TO ADD:
- *  - Player vs player game mode
- *  - Hints/definitions of words
  *  - Have the hangman get drawn
  *  - Check lowercase/uppercase letters for player 2
  *      - (E.g. Word is: Foo and they type lowercase f --> Should be valid)
@@ -124,8 +122,7 @@ int main() {
 
         std::string gameMode;
 
-        std::cout << "You will be playing against The Computer" << std::endl;
-        std::cout << "Press '1' to play the game" << std::endl;
+        std::cout << "Would you like to play against:\n 1) A friend\n 2) The computer?" << std::endl;
         std::cout << "Type 'quit' to end the game." << std::endl;
 
         std::cin >> gameMode;
@@ -142,8 +139,93 @@ int main() {
         std::string hidden_word = "";
         std::string input;
 
+                if (gameMode == "1") {
+            bool isValidWord = false;
 
-        if (gameMode == "1") {
+            std::cout << "=========PLAYER 1'S TURN=========" << std::endl;
+            while (isValidWord == false) {
+
+                std::cout << "Give me a word: ";
+                std::cin >> input;
+                isValidWord = has_only_alpha(input);
+                if (isValidWord) {
+                    for (int i = 0; i < 100; i++) { // clears the terminal
+                        std::cout << "\n" << std::endl;
+                    }
+                    break;
+                }
+                std::cout << "Only letters are allowed in words." << std::endl;
+            }
+
+            for (int j = 0; j < input.length(); j++) {
+                hidden_word += "_";
+            }
+
+            toLower(input);
+   
+            std::cout << "=========PLAYER 2'S TURN=========" << std::endl;
+
+            bool game_over = false;
+
+            int num_tries = input.length() + 1;
+
+            std::cout << "The word that your friend gave was " << input.length() << " letters long." << std::endl;
+
+            std::cout << "Updated Word: " << hidden_word << std::endl;
+
+            while ((num_tries > 0) && (game_over == false)) {
+                char letter;
+                std::cout << "Number of tries left: " << num_tries << std::endl;
+                std::cout << "Give me a letter you think is in the word: ";
+                std::cin >> letter;
+                
+                
+                std::stringstream stream;
+                std::string str;
+
+                stream << letter;
+                stream >> str;
+
+                toLower(str);
+                            
+                std::size_t found = input.find(letter);
+                if (found != std::string::npos) {
+                    std::cout << "That letter is in the word!" << std::endl;
+                    std::vector<int> characterLocations = findLocation(input,letter);
+
+
+
+                    hidden_word = updateWord(hidden_word, characterLocations, letter);
+                    if (hidden_word == input) {
+                        game_over = true;
+                        break;
+                    }
+                    std::cout << "Updated Word: " << hidden_word << std::endl;
+
+
+
+                }
+                else {
+                    std::cout << "That letter is not in the word." << std::endl;
+                }
+
+                num_tries--;
+            }
+
+
+
+
+            if (num_tries != 0) {
+                std::cout << "Player 2 wins!" << std::endl;
+            }
+            else {
+                std::cout << "Player 1 wins!" << std::endl;
+            }
+            std::cout << "The word you gave me was: " << input  << std::endl;
+            run = false;
+        }
+        
+        else if (gameMode == "2") {
            
             input = runAI();
             //std::cout << "word chosen by computer is: " << input << std::endl;
